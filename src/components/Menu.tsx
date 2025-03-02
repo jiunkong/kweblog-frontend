@@ -63,12 +63,12 @@ export default function Menu(props: {updated?: number}) {
             { username ?
             <div className="absolute left-0 bottom-6 h-[44px] w-[270px] pl-8">
                 <div className="flex">
-                    <img src={`http://${process.env.NEXT_PUBLIC_API_URL}/user/profileImage?username=${username}${props.updated ? `&update=${props.updated}` : ""}`} suppressHydrationWarning={true} className="rounded-full" width={44} height={44}></img>
+                    <img src={`${process.env.NEXT_PUBLIC_API_URL}/user/profileImage?username=${username}${props.updated ? `&update=${props.updated}` : ""}`} suppressHydrationWarning={true} className="rounded-full" width={44} height={44}></img>
                     <div className="ml-4 mr-5">
                         <div className="text-xl h-[24px] leading-[20px] hover:underline"><Link href={`/profile/${username}`}>{username}</Link></div>
                         <div className="text-sm h-[20px] text-white/50 decoration-white/50 hover:underline cursor-pointer" onClick={async () => {
                             sessionStorage.removeItem("username")
-                            await fetch(`http://${process.env.NEXT_PUBLIC_API_URL}/user/signout`, { credentials: 'include' })
+                            await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/signout`, { credentials: 'include' })
                             setUsername("")
                             router.push('/')
                         }}>로그아웃</div>

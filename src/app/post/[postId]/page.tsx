@@ -1,5 +1,6 @@
 "use client"
 
+import Comments from "@/components/Comments"
 import Menu from "@/components/Menu"
 import NotFound from "@/components/NotFound"
 import { MarkdownRenderer } from "@/components/util"
@@ -27,18 +28,20 @@ export default function Post() {
     const [isEntering, setIsEntering] = useState(false)
     const [isLiking, setIsLiking] = useState(false)
 
+    const [comments, setComments] = useState(0)
+
     useEffect(() => {
-        fetch(`http://${process.env.NEXT_PUBLIC_API_URL}/post/${params.postId}`).then(async (res) => {
+        fetch(`${process.env.NEXT_PUBLIC_API_URL}/post/${params.postId}`).then(async (res) => {
             if (res.ok) {
                 const post = await res.json() as PostDTO
                 post.content = post.content.replaceAll(/!\[(.*?)\]\(([0-9])\)/g, (match, text, number) => {
-                    return `![${text}](http://${process.env.NEXT_PUBLIC_API_URL}/post/${params.postId}/${number})`
+                    return `![${text}](${process.env.NEXT_PUBLIC_API_URL}/post/${params.postId}/${number})`
                 })
                 setPost(post)
             } else setExist(false)
         })
 
-        fetch(`http://${process.env.NEXT_PUBLIC_API_URL}/post/${params.postId}/isLiking`, {
+        fetch(`${process.env.NEXT_PUBLIC_API_URL}/post/${params.postId}/isLiking`, {
             credentials: 'include'
         }).then(async (res) => {
             if (res.ok) {
@@ -47,6 +50,14 @@ export default function Post() {
         })
     }, [isLiking])
 
+    useEffect(() => {
+        fetch(`${process.env.NEXT_PUBLIC_API_URL}/comment/${params.postId}`).then(async (res) => {
+            if (res.ok) {
+                setComments(parseInt(await res.text()))
+            }
+        })
+    }, [])
+
     function getLikeImage() {
         if (isLiking) return "/filled_heart.png"
         else return isEntering ? "/filled_heart.png" : "/empty_heart.png"
@@ -54,7 +65,7 @@ export default function Post() {
 
     function like() {
         setIsLiking(!isLiking)
-        fetch(`http://${process.env.NEXT_PUBLIC_API_URL}/post/${params.postId}/toggleLike`, {
+        fetch(`${process.env.NEXT_PUBLIC_API_URL}/post/${params.postId}/toggleLike`, {
             method: 'PATCH',
             credentials: 'include'
         })
@@ -65,9 +76,9 @@ export default function Post() {
             { !exist ? <NotFound></NotFound> :
             <div className="flex">
                 <Menu></Menu>
-                <main className="flex justify-center grow">
+                <main className="flex justify-center grow overflow-y-auto h-screen">
                     { post &&
-                    <div className="my-32 max-w-[800px]">
+                    <div className="my-32 max-w-[800px] h-fit">
                         <div className="flex items-center h-fit">
                             <div className="h-[22px] w-[22px] mr-4">
                                 <button onClick={() => {router.back()}}>
@@ -92,9 +103,10 @@ export default function Post() {
                             </div>
                             <div className="flex leading-[26px] h-[28px] ml-6 cursor-pointer">
                                 <Image src="/comment.png" width={28} height={28} alt="comment"></Image>
-                                <span className="ml-2">0</span>
+                                <span className="ml-2">{comments}</span>
                             </div>
                         </div>
+                        <Comments postId={params.postId as string}/>
                     </div>}
                 </main>
             </div>

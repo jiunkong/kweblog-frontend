@@ -42,7 +42,7 @@ export default function Write() {
 
             data.append('content', content)
     
-            const res = await fetch(`http://${process.env.NEXT_PUBLIC_API_URL}/post/write`, {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/post/write`, {
                 method: "POST",
                 body: data,
                 credentials: 'include'

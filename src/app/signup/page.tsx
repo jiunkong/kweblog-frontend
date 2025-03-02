@@ -2,7 +2,7 @@
 
 import { useState, useRef } from "react"
 import { useRouter } from "next/navigation";
-import * as crypto from "crypto"
+import * as crypto from "node:crypto";
 
 export default function SignUp() {
     const [step, setStep] = useState(0)
@@ -66,7 +66,7 @@ export default function SignUp() {
                         editFlag(0, 1)
                         if (inputRef.current[0]?.value && inputRef.current[1]?.value) {
                             save()
-                            const res = await (await fetch(`http://${process.env.NEXT_PUBLIC_API_URL}/user/existedId?id=${inputRef.current[0].value}`)).text()
+                            const res = await (await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/existedId?id=${inputRef.current[0].value}`)).text()
                             if (res == "false") setStep(1)
                             else {
                                 setExisted([true, existed[1]])
@@ -102,7 +102,7 @@ export default function SignUp() {
                     <button className="bg-blue-600 border-blue-600 border px-4 py-2 rounded-lg hover:bg-blue-700 w-36" onClick={async () => {
                         editFlag(2, 3, 4)
                         if (inputRef.current[2]?.value && textareaRef.current?.value && isImageExists()) {
-                            const res = await (await fetch(`http://${process.env.NEXT_PUBLIC_API_URL}/user/existedUsername?username=${inputRef.current[2].value}`)).text()
+                            const res = await (await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/existedUsername?username=${inputRef.current[2].value}`)).text()
                             if (res == "false") {
                                 const data = new FormData()
                                 data.append("id", accountInfo.id)
@@ -112,7 +112,7 @@ export default function SignUp() {
                                 data.append("introduction", textareaRef.current.value)
                                 data.append("image", imageRef.current!.files![0])
 
-                                const res = await fetch(`http://${process.env.NEXT_PUBLIC_API_URL}/user/signup`, {
+                                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/signup`, {
                                     method: "POST",
                                     body: data,
                                     credentials: 'include'

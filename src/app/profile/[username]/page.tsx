@@ -26,12 +26,12 @@ export default function Profile() {
     const scrollRef = useRef(null)
 
     useEffect(() => {
-        fetch(`http://${process.env.NEXT_PUBLIC_API_URL}/user/introduction?username=${params.username}`).then(async (res) => {
+        fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/introduction?username=${params.username}`).then(async (res) => {
             if (res.ok) {
                 setIntroduction(await res.text())
             } else setExist(false)
         })
-        fetch(`http://${process.env.NEXT_PUBLIC_API_URL}/user/isSelf?username=${params.username}`, { credentials: 'include' }).then(async (res) => {
+        fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/isSelf?username=${params.username}`, { credentials: 'include' }).then(async (res) => {
             if (res.ok && await res.text() == 'true') {
                 setSelf(true)   
             }
@@ -45,7 +45,7 @@ export default function Profile() {
         const tasks = []
         const count = Math.min(LOAD_COUNT, posts.length - thumbnails.length)
         for (let i = 0; i < count; i++) {
-            tasks.push(fetch(`http://${process.env.NEXT_PUBLIC_API_URL}/post/thumbnail?postId=${posts[thumbnails.length + i]}`))
+            tasks.push(fetch(`${process.env.NEXT_PUBLIC_API_URL}/post/thumbnail?postId=${posts[thumbnails.length + i]}`))
         }
 
         const resList = await Promise.all(tasks)
@@ -61,7 +61,7 @@ export default function Profile() {
 
     useEffect(() => {
         if (posts.length == 0) {
-            fetch(`http://${process.env.NEXT_PUBLIC_API_URL}/post/userPosts?username=${params.username}`).then(async (res) => {
+            fetch(`${process.env.NEXT_PUBLIC_API_URL}/post/userPosts?username=${params.username}`).then(async (res) => {
                 if (res.ok) {
                     const p = await res.json() as number[]
                     if (p.length > 0) setPosts(p)
@@ -105,7 +105,7 @@ export default function Profile() {
                 <main className="grow overflow-y-scroll h-screen">
                     <div className={`max-w-[750px] mx-auto`} ref={scrollRef}>
                         <header className="mt-32 flex h-[175px] pl-5">
-                            <img src={`http://${process.env.NEXT_PUBLIC_API_URL}/user/profileImage?username=${params.username}&update=${profileUpdated}`} suppressHydrationWarning={true} className="rounded-full" width={175} height={175}></img>
+                            <img src={`${process.env.NEXT_PUBLIC_API_URL}/user/profileImage?username=${params.username}&update=${profileUpdated}`} suppressHydrationWarning={true} className="rounded-full" width={175} height={175}></img>
                             <div className="ml-8 h-[175px] w-[650px]">
                                 <div className="mb-2 flex">
                                     <div className="text-4xl font-bold">

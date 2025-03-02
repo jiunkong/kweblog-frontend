@@ -14,7 +14,7 @@ export default function SignIn() {
             const id = inputRef.current[0].value
             const pw = crypto.createHmac("sha256", process.env.NEXT_PUBLIC_SECRET!).update(inputRef.current[1].value).digest("hex")
             if (id && pw) {
-                const res = await fetch(`http://${process.env.NEXT_PUBLIC_API_URL}/user/signin?id=${id}&pw=${pw}`, {
+                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/signin?id=${id}&pw=${pw}`, {
                     credentials: 'include'
                 })
                 if (res.ok) {

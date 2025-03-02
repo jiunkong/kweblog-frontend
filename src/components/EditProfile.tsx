@@ -21,7 +21,7 @@ export default function EditProfile(props: ModalProps) {
             data.append('introduction', value)
         }
 
-        const res = await fetch(`http://${process.env.NEXT_PUBLIC_API_URL}/user/updateProfile`, {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/updateProfile`, {
             method: "PATCH",
             body: data,
             credentials: 'include'
