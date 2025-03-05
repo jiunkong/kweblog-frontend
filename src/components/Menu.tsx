@@ -84,34 +84,35 @@ function NotificationComponent(props: {notification: Notification, load: () => v
 }
 
 export default function Menu(props: {updated?: number, updateFunc?: () => void}) {
-    const [searchOpened, SetSearchOpened] = useState(false)
-    const [notificationOpened, SetNotificationOpened] = useState(false)
+    const [searchOpened, setSearchOpened] = useState(false)
+    const [notificationOpened, setNotificationOpened] = useState(false)
     const [notifications, setNotifications] = useState<Notification[]>([])
     const [searchResult, setSearchResult] = useState<string[]>([])
 
     const searchInputRef = useRef<HTMLInputElement>(null)
 
     function resetTab() {
-        SetSearchOpened(false)
-        SetNotificationOpened(false)
+        setSearchOpened(false)
+        setNotificationOpened(false)
     }
 
     function handleNotification() {
         if (notificationOpened) {
-            SetNotificationOpened(false)    
+            setNotificationOpened(false)    
         } else {
             loadNotifications() 
-            SetSearchOpened(false)
-            SetNotificationOpened(true)
+            setSearchOpened(false)
+            setNotificationOpened(true)
         }
     }
 
     function handleSearch() {
         if (searchOpened) {
-            SetSearchOpened(false)
+            setSearchOpened(false)
         } else {
-            SetNotificationOpened(false)
-            SetSearchOpened(true)
+            setSearchResult([])
+            setNotificationOpened(false)
+            setSearchOpened(true)
         }
     }
 

@@ -7,9 +7,9 @@ import { linkifyAndBreak } from "@/components/util"
 import EditProfile from "@/components/EditProfile"
 import NotFound from "@/components/NotFound"
 
-import { Post, Thumbnail } from "@/components/Post"
+import { makePosts, Post, PostInfo } from "@/components/Post"
+import { PAGE_SIZE, Pagination } from "@/components/Pagination"
 
-const LOAD_COUNT = 5
 export default function Profile() {
     const params = useParams()
     const router = useRouter()
@@ -18,13 +18,12 @@ export default function Profile() {
     const [introduction, setIntroduction] = useState("")
     const [relation, setRelation] = useState(-2) // self: 2, friend: 1, pending: 0, nothing: -1, err: -2
     const [friendCount, setFriendCount] = useState(0)
+    const [postCount, setPostCount] = useState(0)
     const [isModalOpened, setIsModalOpened] = useState(false)
-    const [posts, setPosts] = useState<number[]>([])
-    const [thumbnails, setThumbnails] = useState<Thumbnail[]>([])
+    const [postInfoList, setPostInfoList] = useState<PostInfo[]>([])
+    const [page, setPage] = useState(1)
 
     const [updateCount, setUpdateCount] = useState(0)
-
-    const scrollRef = useRef(null)
 
     useEffect(() => {
         fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/introduction?username=${params.username}`).then(async (res) => {
@@ -34,52 +33,18 @@ export default function Profile() {
         })
     }, [isModalOpened])
 
-    async function loadThumbnail() {
-        if (posts.length == thumbnails.length) return
-
-        const newThumbnails: Thumbnail[] = []
-        const tasks = []
-        const count = Math.min(LOAD_COUNT, posts.length - thumbnails.length)
-        for (let i = 0; i < count; i++) {
-            tasks.push(fetch(`${process.env.NEXT_PUBLIC_API_URL}/post/thumbnail?postId=${posts[thumbnails.length + i]}`))
-        }
-
-        const resList = await Promise.all(tasks)
-        
-        for (const res of resList) {
+    useEffect(() => {
+        fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/postCount?username=${params.username}`).then(async (res) => {
             if (res.ok) {
-                newThumbnails.push(await res.json())
+                setPostCount(parseInt(await res.text()))
             }
-        }
-        
-        setThumbnails([...thumbnails, ...newThumbnails])
-    }
-
-    useEffect(() => {
-        if (posts.length == 0) {
-            fetch(`${process.env.NEXT_PUBLIC_API_URL}/post/userPosts?username=${params.username}`).then(async (res) => {
-                if (res.ok) {
-                    const p = await res.json() as number[]
-                    if (p.length > 0) setPosts(p)
-                }
-            })
-        }
-        loadThumbnail()
-    }, [posts])
-
-    const scrollEndRef = useRef(null)
-    useEffect(() => {
-        const observer = new IntersectionObserver((entries) => {
-            if (entries[0].isIntersecting) {
-                loadThumbnail()
-            }
-        }, {
-            threshold: 0
         })
-        if (scrollEndRef.current) observer.observe(scrollEndRef.current)
-
-        return () => observer.disconnect()
-    })
+        fetch(`${process.env.NEXT_PUBLIC_API_URL}/post/userPosts?page=${page}&username=${params.username}`).then(async (res) => {
+            if (res.ok) {
+                setPostInfoList(await res.json())
+            }
+        })
+    }, [page, postCount])
 
     function loadRelation() {
         fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/relation?username=${params.username}`, { credentials: 'include' }).then(async (res) => {
@@ -97,18 +62,6 @@ export default function Profile() {
             }
         })
     }, [])
-
-    function makePosts() {
-        const result = []
-        for (let i = 0; i < thumbnails.length; i++) {
-            result.push(
-                <Post postId={posts[i]} thumbnail={thumbnails[i]} push={router.push} final={i == thumbnails.length - 1} key={posts[i]}/>
-            )
-        }
-        result.push(<div key={0} className="h-1" ref={scrollEndRef}></div>)
-
-        return result
-    }
 
     async function requestFriend() {
         await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/requestFriend?username=${params.username}`, {
@@ -146,8 +99,8 @@ export default function Profile() {
             { !exist ? <NotFound></NotFound> :
             <div className="flex">
                 <Menu updated={updateCount} updateFunc={loadRelation}></Menu>
-                <main className="grow overflow-y-scroll h-screen">
-                    <div className={`max-w-[750px] mx-auto`} ref={scrollRef}>
+                <main className="grow overflow-y-auto h-screen">
+                    <div className={`max-w-[750px] mx-auto`}>
                         <header className="mt-32 flex h-[175px] pl-5">
                             <img src={`${process.env.NEXT_PUBLIC_API_URL}/user/profileImage?username=${params.username}&update=${updateCount}`} suppressHydrationWarning={true} className="rounded-full" width={175} height={175}></img>
                             <div className="ml-8 h-[175px] w-[650px]">
@@ -159,7 +112,7 @@ export default function Profile() {
                                     {relationBtn()}
                                 </div>         
                                 <div className="font-light mb-3 text-[17px]">
-                                    <span>{`${posts.length} 게시물`}</span>
+                                    <span>{`${postCount} 게시물`}</span>
                                     <span className="ml-3">{`${friendCount} 서로이웃`}</span>
                                 </div>
                                 <p className="font-light text-[18px] overflow-y-auto text-wrap overflow-x-hidden text-pretty break-words h-[90px] w-[450px]">
@@ -171,7 +124,8 @@ export default function Profile() {
                             <div className="w-fit mx-auto border-b">게시물</div>
                         </div>
                         <article className="mb-32 grid mx-5 mt-8 flex flex-col">
-                            {makePosts()}
+                            {makePosts(postInfoList, router.push)}
+                            <Pagination currentPage={page} totalPages={Math.ceil(postCount / PAGE_SIZE)} onPageChange={setPage}/>
                         </article>
                     </div>
                 </main>
