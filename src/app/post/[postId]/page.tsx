@@ -51,7 +51,7 @@ export default function Post() {
     }, [isLiking])
 
     useEffect(() => {
-        fetch(`${process.env.NEXT_PUBLIC_API_URL}/comment/${params.postId}`).then(async (res) => {
+        fetch(`${process.env.NEXT_PUBLIC_API_URL}/comment/${params.postId}/count`).then(async (res) => {
             if (res.ok) {
                 setComments(parseInt(await res.text()))
             }
@@ -82,7 +82,7 @@ export default function Post() {
                         <div className="flex items-center h-fit">
                             <div className="h-[22px] w-[22px] mr-4">
                                 <button onClick={() => {router.back()}}>
-                                    <Image src="/back.png" className="opacity-50 w-[22px] h-[22px]" width={22} height={22} alt="back"/>
+                                    <Image src="/back.png" className="opacity-50 w-[22px] h-[22px] z-10" width={22} height={22} alt="back"/>
                                 </button>
                             </div>
                             <h1 className="font-bold text-3xl text-wrap overflow-x-hidden text-pretty break-words w-[578px]">{post.title}</h1>

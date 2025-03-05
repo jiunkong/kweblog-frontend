@@ -2,7 +2,8 @@ import { useRef } from "react"
 
 interface ModalProps {
     default: string,
-    setIsOpened: (value: boolean) => void
+    setIsOpened: (value: boolean) => void,
+    updateFunc: () => void
 }
 
 export default function EditProfile(props: ModalProps) {

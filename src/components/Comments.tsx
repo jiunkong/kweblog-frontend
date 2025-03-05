@@ -14,9 +14,8 @@ export default function Comments(props: {postId: string}) {
     const [comments, setComments] = useState<CommentDTO[]>([])
 
     useEffect(() => {
-        fetch(`${process.env.NEXT_PUBLIC_API_URL}/comment/${props.postId}/1`).then(async (res) => {
+        fetch(`${process.env.NEXT_PUBLIC_API_URL}/comment/${props.postId}`).then(async (res) => {
             if (res.ok) {
-                console.log(await res.json())
                 setComments(await res.json())
             }
         })
@@ -35,7 +34,7 @@ export default function Comments(props: {postId: string}) {
                 credentials: 'include'
             }).then(() => {
                 if (textareaRef.current) textareaRef.current.value = ""
-                setWrittenComments(writtenComments + 1)
+                setWrittenComments(prev => prev + 1)
             })
         }
     }
