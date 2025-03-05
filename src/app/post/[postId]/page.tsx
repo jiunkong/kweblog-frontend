@@ -48,7 +48,7 @@ export default function Post() {
                 setIsLiking(await res.text() == "true")
             }
         })
-    }, [isLiking])
+    }, [isLiking, params.postId])
 
     useEffect(() => {
         fetch(`${process.env.NEXT_PUBLIC_API_URL}/comment/${params.postId}/count`).then(async (res) => {
@@ -56,7 +56,7 @@ export default function Post() {
                 setComments(parseInt(await res.text()))
             }
         })
-    }, [])
+    }, [params.postId])
 
     function getLikeImage() {
         if (isLiking) return "/filled_heart.png"

@@ -19,7 +19,7 @@ export default function Comments(props: {postId: string}) {
                 setComments(await res.json())
             }
         })
-    }, [writtenComments])
+    }, [writtenComments, props.postId])
 
     function write() {
         if (textareaRef.current?.value) {

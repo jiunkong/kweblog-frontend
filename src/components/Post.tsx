@@ -23,7 +23,7 @@ export function Post(props: {info: PostInfo, push: (str: string) => void, final:
     return (
         <div className="w-full">
             { props.info.image && <div className="max-h-[400px] mx-auto overflow-hidden w-fit flex flex-col justify-center cursor-pointer" onClick={() => props.push(`/post/${props.info.postId}`)}>
-                <img className="object-cover" src={`${process.env.NEXT_PUBLIC_API_URL}/post/${props.info.postId}/0`}></img>
+                <img alt="post cover" className="object-cover" src={`${process.env.NEXT_PUBLIC_API_URL}/post/${props.info.postId}/0`}></img>
             </div> }
             <h3 className="text-3xl font-bold mt-8 w-fit cursor-pointer" onClick={() => props.push(`/post/${props.info.postId}`)}>{props.info.title}</h3>
             <div className="flex mt-2 text-gray-300">

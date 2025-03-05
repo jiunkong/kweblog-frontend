@@ -2,7 +2,7 @@
 
 import { useState, useRef } from "react"
 import { useRouter } from "next/navigation";
-import * as crypto from "node:crypto";
+import * as crypto from "crypto";
 
 export default function SignUp() {
     const [step, setStep] = useState(0)

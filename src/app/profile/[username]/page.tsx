@@ -1,13 +1,13 @@
 "use client"
 
 import Menu from "@/components/Menu"
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect } from "react"
 import { useRouter, useParams } from "next/navigation"
 import { linkifyAndBreak } from "@/components/util"
 import EditProfile from "@/components/EditProfile"
 import NotFound from "@/components/NotFound"
 
-import { makePosts, Post, PostInfo } from "@/components/Post"
+import { makePosts, PostInfo } from "@/components/Post"
 import { PAGE_SIZE, Pagination } from "@/components/Pagination"
 
 export default function Profile() {
@@ -31,7 +31,7 @@ export default function Profile() {
                 setIntroduction(await res.text())
             } else setExist(false)
         })
-    }, [isModalOpened])
+    }, [isModalOpened, params.username])
 
     useEffect(() => {
         fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/postCount?username=${params.username}`).then(async (res) => {
@@ -44,7 +44,7 @@ export default function Profile() {
                 setPostInfoList(await res.json())
             }
         })
-    }, [page, postCount])
+    }, [page, postCount, params.username])
 
     function loadRelation() {
         fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/relation?username=${params.username}`, { credentials: 'include' }).then(async (res) => {
@@ -102,7 +102,7 @@ export default function Profile() {
                 <main className="grow overflow-y-auto h-screen">
                     <div className={`max-w-[750px] mx-auto`}>
                         <header className="mt-32 flex h-[175px] pl-5">
-                            <img src={`${process.env.NEXT_PUBLIC_API_URL}/user/profileImage?username=${params.username}&update=${updateCount}`} suppressHydrationWarning={true} className="rounded-full" width={175} height={175}></img>
+                            <img alt="profile" src={`${process.env.NEXT_PUBLIC_API_URL}/user/profileImage?username=${params.username}&update=${updateCount}`} suppressHydrationWarning={true} className="rounded-full" width={175} height={175}></img>
                             <div className="ml-8 h-[175px] w-[650px]">
                                 <div className="mb-2 flex">
                                     <div className="flex items-center">

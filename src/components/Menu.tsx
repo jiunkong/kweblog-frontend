@@ -147,10 +147,10 @@ export default function Menu(props: {updated?: number, updateFunc?: () => void})
 
     function makeSearchResult() {
         const result = []
-        for (const [idx, item] of searchResult.entries()) {
+        for (const [_, item] of searchResult.entries()) {
             result.push(<div className="flex ml-8 mt-2" key={item}>
                 <div className="h-[30px] w-[30px] mr-3 cursor-pointer" onClick={() => {router.push(`/profile/${item}`)}}>
-                    <img src={`${process.env.NEXT_PUBLIC_API_URL}/user/profileImage?username=${item}`} className="rounded-full" width={30} height={30}></img>
+                    <img alt="profile" src={`${process.env.NEXT_PUBLIC_API_URL}/user/profileImage?username=${item}`} className="rounded-full" width={30} height={30}></img>
                 </div>
                 <Link href={`/profile/${item}`} className="text-lg hover:underline">{item}</Link>
             </div>)
@@ -200,7 +200,7 @@ export default function Menu(props: {updated?: number, updateFunc?: () => void})
                 { username ?
                 <div className="absolute left-0 bottom-6 h-[44px] w-[270px] pl-8">
                     <div className="flex">
-                        <img src={`${process.env.NEXT_PUBLIC_API_URL}/user/profileImage?username=${username}${props.updated ? `&update=${props.updated}` : ""}`} suppressHydrationWarning={true} className="rounded-full" width={44} height={44}></img>
+                        <img alt="profile" src={`${process.env.NEXT_PUBLIC_API_URL}/user/profileImage?username=${username}${props.updated ? `&update=${props.updated}` : ""}`} suppressHydrationWarning={true} className="rounded-full" width={44} height={44}></img>
                         <div className="ml-4 mr-5">
                             <div className="text-xl h-[24px] leading-[20px] hover:underline"><Link href={`/profile/${username}`}>{username}</Link></div>
                             <div className="text-sm h-[20px] text-white/50 decoration-white/50 hover:underline cursor-pointer" onClick={async () => {
