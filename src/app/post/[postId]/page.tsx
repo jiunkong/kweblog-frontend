@@ -25,8 +25,9 @@ export default function Post() {
     const [exist, setExist] = useState(true)
     const [post, setPost] = useState<PostDTO>()
 
-    const [isEntering, setIsEntering] = useState(false)
+    const [isEntering, setIsEntering] = useState(0)
     const [isLiking, setIsLiking] = useState(false)
+    const [isSaved, setIsSaved] = useState(false)
 
     const [comments, setComments] = useState(0)
 
@@ -55,7 +56,18 @@ export default function Post() {
                 setIsLiking(await res.text() == "true")
             }
         })
-    }, [isLiking, params.postId])
+
+        fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/isSaved?postId=${params.postId}`, {
+            credentials: 'include',
+            headers: {
+                Accept: "application/json"
+            }
+        }).then(async (res) => {
+            if (res.ok) {
+                setIsSaved(await res.text() == "true")
+            }
+        })
+    }, [isLiking, isSaved, params.postId])
 
     useEffect(() => {
         fetch(`${process.env.NEXT_PUBLIC_API_URL}/comment/${params.postId}/count`, {
@@ -71,13 +83,27 @@ export default function Post() {
 
     function getLikeImage() {
         if (isLiking) return "/filled_heart.png"
-        else return isEntering ? "/filled_heart.png" : "/empty_heart.png"
+        else return isEntering === 1 ? "/filled_heart.png" : "/empty_heart.png"
+    }
+
+    function getBookmarkImage() {
+        if (isSaved) return "/filled_bookmark.png"
+        else return isEntering === 2 ? "/filled_bookmark.png" : "/empty_bookmark.png"
     }
 
     function like() {
         setIsLiking(!isLiking)
         fetch(`${process.env.NEXT_PUBLIC_API_URL}/post/${params.postId}/toggleLike`, {
             method: 'PATCH',
+            credentials: 'include'
+        })
+    }
+
+    function bookmark() {
+        setIsSaved(!isSaved)
+        const fetchUrl = `${process.env.NEXT_PUBLIC_API_URL}/user/` + (isSaved ? `deleteSavedPost?postId=${params.postId}` : `savePost?postId=${params.postId}`)
+        fetch(fetchUrl, {
+            method: 'POST',
             credentials: 'include'
         })
     }
@@ -109,12 +135,16 @@ export default function Post() {
                         <div className="flex ml-10 text-[17px] items-center">
                             <div className="flex leading-[22px] h-[23px]">
                                 <Image src={getLikeImage()} width={23} height={23} alt="like" className="h-[23px] w-[23px] cursor-pointer"
-                                    onMouseEnter={() => {setIsEntering(true)}} onMouseLeave={() => {setIsEntering(false)}} onClick={like}></Image>
+                                    onMouseEnter={() => {setIsEntering(1)}} onMouseLeave={() => {setIsEntering(0)}} onClick={like}></Image>
                                 <span className="ml-2">{post.likes}</span>
                             </div>
                             <div className="flex leading-[26px] h-[28px] ml-6 cursor-pointer">
                                 <Image src="/comment.png" width={28} height={28} alt="comment"></Image>
                                 <span className="ml-2">{comments}</span>
+                            </div>
+                            <div className="flex h-[22px] ml-6 cursor-pointer">
+                                <Image src={getBookmarkImage()} width={22} height={22} alt="bookmark"
+                                    onMouseEnter={() => {setIsEntering(2)}} onMouseLeave={() => {setIsEntering(0)}} onClick={bookmark}></Image>
                             </div>
                         </div>
                         <Comments postId={params.postId as string}/>

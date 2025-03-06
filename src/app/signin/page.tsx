@@ -1,11 +1,12 @@
 "use client"
 
-import { useRef } from "react"
+import { useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import * as crypto from "crypto"
 
 export default function SignIn() {
     const inputRef = useRef<Array<HTMLInputElement | null>>([])
+    const [failed, setFailed] = useState(false)
 
     const router = useRouter()
 
@@ -24,7 +25,7 @@ export default function SignIn() {
                     sessionStorage.setItem("username", await res.text())
                     router.push('/')
                 } else {
-                    console.error("failed to log in")
+                    setFailed(true)
                 }
             }
         }
@@ -36,10 +37,12 @@ export default function SignIn() {
                 <div className="text-4xl font-bold mb-8 text-center">KWEBLOG</div>
                 <div>
                     <div className="mb-3">
-                        <input type="text" placeholder="아이디" className="bg-transparent border border-white/50 focus:border-white rounded-lg px-5 py-2 w-80" ref={(e) => {inputRef.current[0] = e}}></input>
+                        <input type="text" placeholder="아이디" className={ failed ? "bg-transparent border rounded-lg px-5 py-2 w-80 placeholder-rose-600 text-rose-600 border-rose-700 focus:border-rose-600 focus:outline-none" : 
+                            "bg-transparent border border-white/50 focus:border-white rounded-lg px-5 py-2 w-80"} ref={(e) => {inputRef.current[0] = e}} onChange={() => setFailed(false)}></input>
                     </div>
                     <div>
-                        <input type="password" placeholder="비밀번호" className="bg-transparent border border-white/50 focus:border-white rounded-lg px-5 py-2 w-80" ref={(e) => {inputRef.current[1] = e}}></input>
+                        <input type="password" placeholder="비밀번호" className={ failed ? "bg-transparent border rounded-lg px-5 py-2 w-80 placeholder-rose-600 text-rose-600 border-rose-700 focus:border-rose-600 focus:outline-none" : 
+                            "bg-transparent border border-white/50 focus:border-white rounded-lg px-5 py-2 w-80"} ref={(e) => {inputRef.current[1] = e}} onChange={() => setFailed(false)}></input>
                     </div>
                 </div>
                 <div>

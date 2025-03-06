@@ -22,6 +22,7 @@ export default function Profile() {
     const [isModalOpened, setIsModalOpened] = useState(false)
     const [postInfoList, setPostInfoList] = useState<PostInfo[]>([])
     const [page, setPage] = useState(1)
+    const [postType, setPostType] = useState("userPosts")
 
     const [updateCount, setUpdateCount] = useState(0)
 
@@ -38,7 +39,7 @@ export default function Profile() {
     }, [isModalOpened, params.username])
 
     useEffect(() => {
-        fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/postCount?username=${params.username}`, {
+        fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/postCount?username=${params.username}&type=${postType}`, {
             headers: {
                 Accept: "application/json"
             }
@@ -47,7 +48,9 @@ export default function Profile() {
                 setPostCount(parseInt(await res.text()))
             }
         })
-        fetch(`${process.env.NEXT_PUBLIC_API_URL}/post/userPosts?page=${page}&username=${params.username}`, {
+
+        const fetchPostsUrl = process.env.NEXT_PUBLIC_API_URL + ( postType === "userPosts" ? "/post/userPosts" : "/user/savedPosts" ) + `?page=${page}&username=${params.username}`
+        fetch(fetchPostsUrl, {
             headers: {
                 Accept: "application/json"
             }
@@ -56,7 +59,7 @@ export default function Profile() {
                 setPostInfoList(await res.json())
             }
         })
-    }, [page, postCount, params.username])
+    }, [page, postCount, params.username, postType])
 
     function loadRelation() {
         fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/relation?username=${params.username}`, { credentials: 'include', headers: {
@@ -136,8 +139,9 @@ export default function Profile() {
                                 </p>
                             </div>
                         </header>
-                        <div className="text-center text-xl mt-8">
-                            <div className="w-fit mx-auto border-b">게시물</div>
+                        <div className="text-center text-xl mt-8 flex justify-center">
+                            <div className={`w-fit cursor-pointer ${postType === "userPosts" ? "border-b" : "text-gray-500"} ${relation === 2 ? "mr-4" : ""}`} onClick={() => setPostType("userPosts")}>게시물</div>
+                            { relation === 2 && <div className={`w-fit cursor-pointer ${postType === "savedPosts" ? "border-b" : "text-gray-500"} ${relation === 2 ? "ml-4" : ""}`} onClick={() => setPostType("savedPosts")}>저장됨</div> }
                         </div>
                         <article className="mb-32 grid mx-5 mt-8 flex flex-col">
                             {makePosts(postInfoList, router.push)}
