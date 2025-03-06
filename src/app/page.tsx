@@ -14,12 +14,20 @@ export default function Home() {
     const router = useRouter()
 
     useEffect(() => {
-        fetch(`${process.env.NEXT_PUBLIC_API_URL}/post/count`).then(async (res) => {
+        fetch(`${process.env.NEXT_PUBLIC_API_URL}/post/count`, {
+            headers: {
+                Accept: "application/json"
+            }
+        }).then(async (res) => {
             if (res.ok) {
                 setPostCount(parseInt(await res.text()))
             }
         })
-        fetch(`${process.env.NEXT_PUBLIC_API_URL}/post/userPosts?page=${page}`).then(async (res) => {
+        fetch(`${process.env.NEXT_PUBLIC_API_URL}/post/userPosts?page=${page}`, {
+            headers: {
+                Accept: "application/json"
+            }
+        }).then(async (res) => {
             if (res.ok) {
                 setPostInfoList(await res.json())
             }

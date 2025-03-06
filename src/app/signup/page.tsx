@@ -66,7 +66,11 @@ export default function SignUp() {
                         editFlag(0, 1)
                         if (inputRef.current[0]?.value && inputRef.current[1]?.value) {
                             save()
-                            const res = await (await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/existedId?id=${inputRef.current[0].value}`)).text()
+                            const res = await (await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/existedId?id=${inputRef.current[0].value}`, {
+                                headers: {
+                                    Accept: "application/json"
+                                }
+                            })).text()
                             if (res == "false") setStep(1)
                             else {
                                 setExisted([true, existed[1]])
@@ -102,7 +106,11 @@ export default function SignUp() {
                     <button className="bg-blue-600 border-blue-600 border px-4 py-2 rounded-lg hover:bg-blue-700 w-36" onClick={async () => {
                         editFlag(2, 3, 4)
                         if (inputRef.current[2]?.value && textareaRef.current?.value && isImageExists()) {
-                            const res = await (await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/existedUsername?username=${inputRef.current[2].value}`)).text()
+                            const res = await (await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/existedUsername?username=${inputRef.current[2].value}`, {
+                                headers: {
+                                    Accept: "application/json"
+                                }
+                            })).text()
                             if (res == "false") {
                                 const data = new FormData()
                                 data.append("id", accountInfo.id)

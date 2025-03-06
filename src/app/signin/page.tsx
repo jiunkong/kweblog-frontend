@@ -15,7 +15,10 @@ export default function SignIn() {
             const pw = crypto.createHmac("sha256", process.env.NEXT_PUBLIC_SECRET!).update(inputRef.current[1].value).digest("hex")
             if (id && pw) {
                 const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/signin?id=${id}&pw=${pw}`, {
-                    credentials: 'include'
+                    credentials: 'include',
+                    headers: {
+                        Accept: "application/json"
+                    }
                 })
                 if (res.ok) {
                     sessionStorage.setItem("username", await res.text())

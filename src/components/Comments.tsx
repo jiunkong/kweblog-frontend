@@ -14,7 +14,11 @@ export default function Comments(props: {postId: string}) {
     const [comments, setComments] = useState<CommentDTO[]>([])
 
     useEffect(() => {
-        fetch(`${process.env.NEXT_PUBLIC_API_URL}/comment/${props.postId}`).then(async (res) => {
+        fetch(`${process.env.NEXT_PUBLIC_API_URL}/comment/${props.postId}`, {
+            headers: {
+                Accept: "application/json"
+            }
+        }).then(async (res) => {
             if (res.ok) {
                 setComments(await res.json())
             }

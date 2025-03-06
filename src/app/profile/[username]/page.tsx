@@ -26,7 +26,11 @@ export default function Profile() {
     const [updateCount, setUpdateCount] = useState(0)
 
     useEffect(() => {
-        fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/introduction?username=${params.username}`).then(async (res) => {
+        fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/introduction?username=${params.username}`, {
+            headers: {
+                Accept: "application/json"
+            }
+        }).then(async (res) => {
             if (res.ok) {
                 setIntroduction(await res.text())
             } else setExist(false)
@@ -34,12 +38,20 @@ export default function Profile() {
     }, [isModalOpened, params.username])
 
     useEffect(() => {
-        fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/postCount?username=${params.username}`).then(async (res) => {
+        fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/postCount?username=${params.username}`, {
+            headers: {
+                Accept: "application/json"
+            }
+        }).then(async (res) => {
             if (res.ok) {
                 setPostCount(parseInt(await res.text()))
             }
         })
-        fetch(`${process.env.NEXT_PUBLIC_API_URL}/post/userPosts?page=${page}&username=${params.username}`).then(async (res) => {
+        fetch(`${process.env.NEXT_PUBLIC_API_URL}/post/userPosts?page=${page}&username=${params.username}`, {
+            headers: {
+                Accept: "application/json"
+            }
+        }).then(async (res) => {
             if (res.ok) {
                 setPostInfoList(await res.json())
             }
@@ -47,7 +59,9 @@ export default function Profile() {
     }, [page, postCount, params.username])
 
     function loadRelation() {
-        fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/relation?username=${params.username}`, { credentials: 'include' }).then(async (res) => {
+        fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/relation?username=${params.username}`, { credentials: 'include', headers: {
+            Accept: "application/json"
+        } }).then(async (res) => {
             if (res.ok) {
                 setRelation(parseInt(await res.text()))
             }
@@ -56,7 +70,9 @@ export default function Profile() {
 
     useEffect(() => {
         loadRelation()
-        fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/friends`, { credentials: 'include' }).then(async (res) => {
+        fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/friends`, { credentials: 'include', headers: {
+            Accept: "application/json"
+        } }).then(async (res) => {
             if (res.ok) {
                 setFriendCount(parseInt(await res.text()))
             }

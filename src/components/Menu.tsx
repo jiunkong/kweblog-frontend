@@ -125,7 +125,10 @@ export default function Menu(props: {updated?: number, updateFunc?: () => void})
 
     async function loadNotifications() {
         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/notification`, {
-            credentials: 'include'
+            credentials: 'include',
+            headers: {
+                Accept: "application/json"
+            }
         })
         setNotifications(await res.json())
     }
@@ -140,7 +143,11 @@ export default function Menu(props: {updated?: number, updateFunc?: () => void})
 
     async function search() {
         if (searchInputRef.current?.value) {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/search?query=${searchInputRef.current.value}`)
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/search?query=${searchInputRef.current.value}`, {
+                headers: {
+                    Accept: "application/json"
+                }
+            })
             setSearchResult(await res.json())
         }
     }
@@ -205,7 +212,9 @@ export default function Menu(props: {updated?: number, updateFunc?: () => void})
                             <div className="text-xl h-[24px] leading-[20px] hover:underline"><Link href={`/profile/${username}`}>{username}</Link></div>
                             <div className="text-sm h-[20px] text-white/50 decoration-white/50 hover:underline cursor-pointer" onClick={async () => {
                                 sessionStorage.removeItem("username")
-                                await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/signout`, { credentials: 'include' })
+                                await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/signout`, { credentials: 'include', headers: {
+                                    Accept: "application/json"
+                                }})
                                 setUsername("")
                                 resetTab()
                                 router.push('/')

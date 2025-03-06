@@ -31,7 +31,11 @@ export default function Post() {
     const [comments, setComments] = useState(0)
 
     useEffect(() => {
-        fetch(`${process.env.NEXT_PUBLIC_API_URL}/post/${params.postId}`).then(async (res) => {
+        fetch(`${process.env.NEXT_PUBLIC_API_URL}/post/${params.postId}`, {
+            headers: {
+                Accept: "application/json"
+            }
+        }).then(async (res) => {
             if (res.ok) {
                 const post = await res.json() as PostDTO
                 post.content = post.content.replaceAll(/!\[(.*?)\]\(([0-9])\)/g, (match, text, number) => {
@@ -42,7 +46,10 @@ export default function Post() {
         })
 
         fetch(`${process.env.NEXT_PUBLIC_API_URL}/post/${params.postId}/isLiking`, {
-            credentials: 'include'
+            credentials: 'include',
+            headers: {
+                Accept: "application/json"
+            }
         }).then(async (res) => {
             if (res.ok) {
                 setIsLiking(await res.text() == "true")
@@ -51,7 +58,11 @@ export default function Post() {
     }, [isLiking, params.postId])
 
     useEffect(() => {
-        fetch(`${process.env.NEXT_PUBLIC_API_URL}/comment/${params.postId}/count`).then(async (res) => {
+        fetch(`${process.env.NEXT_PUBLIC_API_URL}/comment/${params.postId}/count`, {
+            headers: {
+                Accept: "application/json"
+            }
+        }).then(async (res) => {
             if (res.ok) {
                 setComments(parseInt(await res.text()))
             }
