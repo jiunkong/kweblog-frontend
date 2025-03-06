@@ -18,7 +18,8 @@ export default function Profile() {
     const [introduction, setIntroduction] = useState("")
     const [relation, setRelation] = useState(-2) // self: 2, friend: 1, pending: 0, nothing: -1, err: -2
     const [friendCount, setFriendCount] = useState(0)
-    const [postCount, setPostCount] = useState(0)
+    const [userPostCount, setUserPostCount] = useState(0)
+    const [savedPostCount, setSavedPostCount] = useState(0)
     const [isModalOpened, setIsModalOpened] = useState(false)
     const [postInfoList, setPostInfoList] = useState<PostInfo[]>([])
     const [page, setPage] = useState(1)
@@ -39,13 +40,23 @@ export default function Profile() {
     }, [isModalOpened, params.username])
 
     useEffect(() => {
-        fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/postCount?username=${params.username}&type=${postType}`, {
+        fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/postCount?username=${params.username}&type=userPosts`, {
             headers: {
                 Accept: "application/json"
             }
         }).then(async (res) => {
             if (res.ok) {
-                setPostCount(parseInt(await res.text()))
+                setUserPostCount(parseInt(await res.text()))
+            }
+        })
+
+        fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/postCount?username=${params.username}&type=savedPosts`, {
+            headers: {
+                Accept: "application/json"
+            }
+        }).then(async (res) => {
+            if (res.ok) {
+                setSavedPostCount(parseInt(await res.text()))
             }
         })
 
@@ -59,7 +70,7 @@ export default function Profile() {
                 setPostInfoList(await res.json())
             }
         })
-    }, [page, postCount, params.username, postType])
+    }, [page, params.username, postType])
 
     function loadRelation() {
         fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/relation?username=${params.username}`, { credentials: 'include', headers: {
@@ -131,7 +142,7 @@ export default function Profile() {
                                     {relationBtn()}
                                 </div>         
                                 <div className="font-light mb-3 text-[17px]">
-                                    <span>{`${postCount} 게시물`}</span>
+                                    <span>{`${userPostCount} 게시물`}</span>
                                     <span className="ml-3">{`${friendCount} 서로이웃`}</span>
                                 </div>
                                 <p className="font-light text-[18px] overflow-y-auto text-wrap overflow-x-hidden text-pretty break-words h-[90px] w-[450px]">
@@ -145,7 +156,7 @@ export default function Profile() {
                         </div>
                         <article className="mb-32 grid mx-5 mt-8 flex flex-col">
                             {makePosts(postInfoList, router.push)}
-                            <Pagination currentPage={page} totalPages={Math.ceil(postCount / PAGE_SIZE)} onPageChange={setPage}/>
+                            <Pagination currentPage={page} totalPages={ postType === "userPosts" ? Math.ceil(userPostCount / PAGE_SIZE) : Math.ceil(savedPostCount / PAGE_SIZE)} onPageChange={setPage}/>
                         </article>
                     </div>
                 </main>
